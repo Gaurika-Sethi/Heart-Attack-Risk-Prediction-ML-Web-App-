@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import shap
 import joblib
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go  
@@ -136,6 +137,55 @@ try:
 
 except Exception as e:
     st.info(f"Feature importance not available: {e}")
+
+# SHAP Explanation
+
+st.subheader("Model Explainability")
+
+if st.button("Explain Prediction (SHAP)"):
+    try:
+        # Use random forest inside VotingClassifier (preferred for SHAP)
+        if hasattr(model, "named_estimators_") and 'rf' in model.named_estimators_:
+            rf_model = model.named_estimators_['rf']
+        else:
+            rf_model = model  # fallback if model itself is RF
+
+        st.write("Computing SHAP values... (this may take a few seconds)")
+
+        # Build TreeExplainer for the tree model
+        explainer = shap.TreeExplainer(rf_model)
+
+        # Compute shap values for the single input row (original unscaled input)
+        shap_values = explainer.shap_values(input_processed)
+
+        # For binary classification, shap_values is a list → pick class 1
+        if isinstance(shap_values, list):
+            shap_for_pos = shap_values[1][0]  # 1 row, positive class
+        else:
+            shap_for_pos = shap_values.values[0]  # newer API
+
+        # Create SHAP bar plot for top contributing features
+        shap_series = pd.Series(shap_for_pos, index=model_columns)
+        shap_series_abs = shap_series.abs().sort_values(ascending=True).tail(10)
+
+        fig, ax = plt.subplots(figsize=(6, 4))
+        shap_series_abs.plot(kind='barh', color='salmon', ax=ax)
+        ax.set_title("Top 10 Features Affecting This Prediction")
+        ax.set_xlabel("SHAP Value (impact on risk)")
+        st.pyplot(fig)
+
+        # SHAP table with direction of effect
+        signed = shap_series.sort_values(key=abs, ascending=False).head(10)
+        df_explain = pd.DataFrame({
+            "Feature": signed.index,
+            "SHAP Value": signed.values,
+            "Effect": ["Increases risk" if v > 0 else "Decreases risk" for v in signed.values]
+        })
+        st.write("Top contributing factors:")
+        st.table(df_explain.reset_index(drop=True))
+
+    except Exception as e:
+        st.error(f"SHAP explanation failed: {e}")
 
 
 
