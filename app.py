@@ -6,14 +6,8 @@ import joblib
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 
-# ---------------------------------------------------------
-#  IMPORTANT: set_page_config MUST be before any UI element
-# ---------------------------------------------------------
 st.set_page_config(page_title="Heart Attack Risk Predictor", layout="centered")
 
-# ---------------------------------------------------------
-# Load model, scaler, and columns
-# ---------------------------------------------------------
 @st.cache_resource
 def load_assets():
     model = joblib.load("heart_attack_model.pkl")
@@ -23,15 +17,9 @@ def load_assets():
 
 model, scaler, model_columns = load_assets()
 
-# ---------------------------------------------------------
-# UI HEADER
-# ---------------------------------------------------------
 st.title("Heart Attack Risk Prediction App")
 st.markdown("Provide your health details below and see your predicted heart disease risk.")
 
-# ---------------------------------------------------------
-# Input Section
-# ---------------------------------------------------------
 st.subheader("🩺 Enter Patient Details")
 
 age = st.number_input("Age", 18, 100, 50)
@@ -48,9 +36,6 @@ slope = st.selectbox("Slope of Peak Exercise ST Segment", ["upsloping", "flat", 
 ca = st.number_input("Major Vessels Colored by Fluoroscopy (0–3)", 0, 3, 0)
 thal = st.selectbox("Thalassemia Type", ["normal", "fixed defect", "reversable defect"])
 
-# ---------------------------------------------------------
-# Build Input Data
-# ---------------------------------------------------------
 input_dict = {
     'age': [age],
     'sex': [sex],
@@ -82,9 +67,6 @@ input_processed = input_processed.reindex(columns=model_columns, fill_value=0)
 # Scale input
 scaled = scaler.transform(input_processed)
 
-# ---------------------------------------------------------
-# Prediction + Visualization
-# ---------------------------------------------------------
 if st.button("Predict"):
     pred = model.predict(scaled)[0]
     prob = model.predict_proba(scaled)[0][1]
@@ -117,10 +99,6 @@ if st.button("Predict"):
     fig.update_layout(height=400, margin=dict(l=20, r=20, t=50, b=20))
     st.plotly_chart(fig, use_container_width=True)
 
-
-# ---------------------------------------------------------
-# Feature Importance Chart
-# ---------------------------------------------------------
 st.subheader("Feature Importance")
 
 try:
@@ -138,10 +116,6 @@ try:
 except Exception as e:
     st.info(f"Feature importance not available: {e}")
 
-
-# ---------------------------------------------------------
-# SHAP Explainability
-# ---------------------------------------------------------
 st.subheader("Model Explainability (SHAP)")
 
 if st.button("Explain Prediction (SHAP)"):
