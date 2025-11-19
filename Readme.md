@@ -1,6 +1,6 @@
 # Heart Attack Prediction System (ML Web App)
 
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg) 
 ![Built with ML](https://img.shields.io/badge/Model-Scikit--Learn-darkblue)
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)
 
