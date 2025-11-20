@@ -35,5 +35,5 @@ runtime.txt
 !heart_attack_model.pkl
 !model_columns.pkl
 !scaler.pkl
-!heart_attack_predictions.csv
-!heart_disease_uci.csv
+heart_attack_predictions.csv
+heart_disease_uci.csv
