@@ -232,4 +232,4 @@ Project Link: [Repository link](https://github.com/Gaurika-Sethi/Heart-Attack-Ri
 
 ## License
 
-This project is licensed under the **MIT License**  see the [LICENSE](LICENSE) file for full details. 
+This project is licensed under the **MIT License**  see the [LICENSE](LICENSE.md) file for full details. 
